@@ -94,7 +94,57 @@ class SetupCommand extends Command {
   }
 
   async createServerlessYaml() {
-
+    this.log(chalk.green('[START]') + ' Generate Serverless Framework template.')
+    const path = `${this.path}/serverless.yml`
+    try {
+      fs.readFileSync(path, 'utf8')
+      this.log(chalk.red('[WARNING]') + ' Serverless Framework template file already exists.')
+      this.exit(0)
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        this.log(e)
+        this.exit(1)
+        return
+      }
+    }
+    const content = {
+      service: {
+        name: 'YOUR_SKILL_NAME',
+      },
+      provider: {
+        name: 'aws',
+        runtime: 'nodejs8.10',
+        logRetentionInDays: 30,
+        iamRoleStatements: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'dynamodb:*',
+            ],
+            Resource: [
+              'arn:aws:dynamodb:{REGION}:*:table/{YOUR_SKILL_DB_NAME}',
+            ],
+          },
+        ],
+      },
+      functions: {
+        mySkill: {
+          handler: 'index.handler',
+          events: [
+            {
+              alexaSkill: 'YOUR_SKILL_ID',
+            },
+          ],
+        },
+      },
+    }
+    try {
+      fs.writeFileSync(path, yaml.safeDump(content))
+      this.log(chalk.green('[SUCCESS]') + 'Serverless Framework template generated.')
+    } catch (e) {
+      this.log(e)
+      this.exit(1)
+    }
   }
 
   async installLintPackages() {
@@ -173,6 +223,11 @@ class SetupCommand extends Command {
     const {args, flags} = this.parse(SetupCommand)
     this.path = flags.path || defaultPath
     switch (args.type) {
+    case 'sls':
+    case 'serverless': {
+      await this.createServerlessYaml()
+      return
+    }
     case 'sam': {
       await this.createSamTemplate()
       return
