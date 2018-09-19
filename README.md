@@ -73,3 +73,29 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.0/src/commands/help.ts)_
+
+# Contributing
+
+## Getting started
+
+```
+$ git clone git@github.com:ask-utils/cli.git
+$ cd cli
+$ npm i
+```
+
+## Run as local
+
+```
+$ ./bin/run --help
+```
+
+## Making Pull Request
+
+```
+# Request to add new feature
+$ git checkout -b feature/{YOUR_UPDATE}
+
+# Fix bug
+$ git checkout -b fix/{YOUR_PATH}
+```
