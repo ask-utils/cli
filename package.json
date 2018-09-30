@@ -1,12 +1,12 @@
 {
   "name": "ask-utils-cli",
   "description": "Utilify CLI tool for ASK CLI & ask-sdk",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "hideokamoto@info@wp-kyoto.net",
   "bin": {
     "asku": "./bin/run"
   },
-  "bugs": "https://github.com/hideokamoto/ask-utils-cli/issues",
+  "bugs": "https://github.com/ask-utils/cli/issues",
   "dependencies": {
     "@oclif/command": "^1.5.0",
     "@oclif/config": "^1.7.2",
@@ -33,9 +33,11 @@
     "/oclif.manifest.json",
     "/src"
   ],
-  "homepage": "https://github.com/hideokamoto/ask-utils-cli",
+  "homepage": "https://github.com/ask-utils/cli",
   "keywords": [
-    "oclif"
+    "alexa",
+    "ask-cli",
+    "ask-utils"
   ],
   "license": "MIT",
   "main": "src/index.js",

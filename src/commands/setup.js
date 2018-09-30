@@ -219,13 +219,45 @@ class SetupCommand extends Command {
     this.log('ESLint ignore file created.')
   }
 
+  async createGitIgnore() {
+    this.log('Add gitignore file.')
+    let content = ''
+    const path = `${this.path}/.gitignore`
+    try {
+      content = fs.readFileSync(path, 'utf8')
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        this.log(e)
+        this.exit(1)
+        return
+      }
+    }
+    if (!/.serverless/g.test(content)) content += '\n.serverless/'
+    if (!/.webpack/g.test(content)) content += '\n.webpack/'
+    if (!/node_modules/g.test(content)) content += '\nnode_modules/'
+    if (!/.envrc/g.test(content)) content += '\n.envrc/'
+    if (!content) return
+    try {
+      fs.writeFileSync(path, content)
+    } catch (e) {
+      this.log(e)
+      this.exit(1)
+    }
+    this.log('created .gitignore')
+  }
+
   async run() {
     const {args, flags} = this.parse(SetupCommand)
     this.path = flags.path || defaultPath
     switch (args.type) {
+    case 'gitignore': {
+      await this.createGitIgnore()
+      return
+    }
     case 'sls':
     case 'serverless': {
       await this.createServerlessYaml()
+      await this.createGitIgnore()
       return
     }
     case 'sam': {
@@ -233,6 +265,24 @@ class SetupCommand extends Command {
       return
     }
     case 'lint': {
+      await this.installLintPackages()
+      await this.updatePackageJsonForLint()
+      await this.createEslintIgnore()
+      return
+    }
+    case 'sam-all': {
+      await this.createGitIgnore()
+      await this.createSamTemplate()
+      await this.installLintPackages()
+      await this.updatePackageJsonForLint()
+      await this.createEslintIgnore()
+      return
+    }
+    case 'sls-all': {
+      await this.createServerlessYaml()
+      await this.createGitIgnore()
+      await this.createGitIgnore()
+      await this.createSamTemplate()
       await this.installLintPackages()
       await this.updatePackageJsonForLint()
       await this.createEslintIgnore()
